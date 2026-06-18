@@ -183,21 +183,8 @@
     document.getElementById('dashboard').classList.add('active');
   }
 
-  // Check login status on load
-  function checkLoginStatus() {
-    const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
-    if (isLoggedIn) {
-      showDashboard();
-    } else {
-      showLogin();
-    }
-  }
-
-  // Load version
-  document.getElementById('loginVersionText').textContent = 'Project Tracker v.2';
-
-  // Initialize
-  checkLoginStatus();
+  // Initialize - Show dashboard directly (no password required)
+  showDashboard();
 </script>
 
 </body>
