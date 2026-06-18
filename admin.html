@@ -3,407 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title id="pageTitle">Admin Panel - Project Tracker</title>
+  <title id="pageTitle">Admin Panel - Project Tracker v.2</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f7fa; color: #333; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f7fa;
-      color: #333;
-    }
+    .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 400px; }
+    .login-box h1 { margin-bottom: 30px; text-align: center; color: #333; font-size: 24px; }
 
-    .login-container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; }
+    .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    .form-group input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
 
-    .login-box {
-      background: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .login-box h1 {
-      margin-bottom: 30px;
-      text-align: center;
-      color: #333;
-      font-size: 24px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: #555;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-      transition: border-color 0.3s;
-    }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .btn {
-      width: 100%;
-      padding: 12px;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
+    .btn { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.3s; }
     .btn:hover { background: #5568d3; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
-
-    .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
-      margin-top: 10px;
-    }
-
-    .btn-secondary:hover { background: #e0e0e0; }
 
     .error { color: #e74c3c; font-size: 12px; margin-top: 5px; }
     .success { color: #27ae60; font-size: 12px; margin-top: 5px; }
 
-    /* Admin Dashboard */
+    .login-footer { text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #999; }
+
     .dashboard { display: none; }
     .dashboard.active { display: block; }
 
-    .header {
-      background: white;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
+    .header { background: white; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
     .header h1 { font-size: 24px; }
-
-    .header-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .header-actions button {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      transition: background 0.3s;
-    }
-
-    .logout-btn {
-      background: #e74c3c;
-      color: white;
-    }
-
+    .header-actions { display: flex; gap: 10px; }
+    .logout-btn { background: #e74c3c; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
     .logout-btn:hover { background: #c0392b; }
 
-    .settings-btn {
-      background: #f0f0f0;
-      color: #333;
-    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-    .settings-btn:hover { background: #e0e0e0; }
+    .main-content { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .main-content h2 { margin-bottom: 20px; font-size: 18px; }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .main-content {
-      display: grid;
-      grid-template-columns: 1fr 350px;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .add-project-form {
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
-    }
-
-    .add-project-form h2 {
-      margin-bottom: 20px;
-      font-size: 18px;
-      color: #333;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .form-row.full { grid-template-columns: 1fr; }
 
-    .projects-list {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
+    .projects-list { margin-top: 30px; }
+    .project-item { padding: 15px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 10px; }
+    .project-item h3 { margin-bottom: 8px; }
 
-    .projects-header {
-      padding: 20px;
-      border-bottom: 1px solid #eee;
-      background: #f9f9f9;
-    }
-
-    .projects-header h2 {
-      font-size: 18px;
-      margin: 0;
-    }
-
-    .project-item {
-      padding: 20px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      gap: 15px;
-    }
-
-    .project-item:last-child { border-bottom: none; }
-
-    .project-info h3 {
-      margin-bottom: 8px;
-      color: #333;
-      font-size: 16px;
-    }
-
-    .project-meta {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }
-
-    .meta-item {
-      font-size: 12px;
-      color: #666;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
     .status-pending { background: #fff3cd; color: #856404; }
     .status-progress { background: #cfe2ff; color: #084298; }
     .status-completed { background: #d1e7dd; color: #0f5132; }
-
-    .project-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .btn-small {
-      padding: 6px 12px;
-      font-size: 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-edit {
-      background: #3498db;
-      color: white;
-    }
-
-    .btn-edit:hover { background: #2980b9; }
-
-    .btn-delete {
-      background: #e74c3c;
-      color: white;
-    }
-
-    .btn-delete:hover { background: #c0392b; }
-
-    .status-select {
-      padding: 6px 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background: white;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .sidebar {
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      height: fit-content;
-    }
-
-    .sidebar h3 {
-      margin-bottom: 20px;
-      font-size: 16px;
-      color: #333;
-    }
-
-    .sidebar-section {
-      margin-bottom: 20px;
-    }
-
-    .sidebar-section label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 13px;
-      color: #555;
-      font-weight: 500;
-    }
-
-    .sidebar-section button {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      background: white;
-      cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
-    }
-
-    .sidebar-section button:hover {
-      background: #f0f0f0;
-      border-color: #667eea;
-    }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal.active { display: flex; }
-
-    .modal-content {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-content h2 {
-      margin-bottom: 20px;
-      font-size: 20px;
-      color: #333;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .modal-actions button {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.3s;
-    }
-
-    .btn-confirm {
-      background: #667eea;
-      color: white;
-    }
-
-    .btn-confirm:hover { background: #5568d3; }
-
-    .btn-cancel {
-      background: #f0f0f0;
-      color: #333;
-    }
-
-    .btn-cancel:hover { background: #e0e0e0; }
-
-    .google-calendar-status {
-      padding: 12px;
-      background: #e8f4f8;
-      border-radius: 6px;
-      margin-bottom: 15px;
-      font-size: 13px;
-      color: #0066cc;
-    }
-
-    .google-calendar-status.connected {
-      background: #d1e7dd;
-      color: #0f5132;
-    }
-
-    .loading { opacity: 0.6; pointer-events: none; }
-
-    @media (max-width: 768px) {
-      .main-content {
-        grid-template-columns: 1fr;
-      }
-
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-
-      .project-item {
-        flex-direction: column;
-      }
-
-      .header {
-        flex-direction: column;
-        gap: 15px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -412,16 +59,16 @@
 <div class="login-container" id="loginPage">
   <div class="login-box">
     <h1>🔐 Admin Login</h1>
-    <form id="loginForm">
+    <form id="loginForm" onsubmit="handleLogin(event)">
       <div class="form-group">
         <label for="password">Admin Password</label>
-        <input type="password" id="password" required placeholder="Enter admin password">
+        <input type="password" id="password" required placeholder="Enter password">
         <div id="loginError" class="error"></div>
       </div>
       <button type="submit" class="btn">Login</button>
     </form>
-    <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #999;">
-      <span id="loginVersionText">Project Tracker v.1</span>
+    <div class="login-footer">
+      <span id="loginVersionText">Project Tracker v.2</span>
     </div>
   </div>
 </div>
@@ -429,316 +76,40 @@
 <!-- Dashboard -->
 <div class="dashboard" id="dashboard">
   <div class="header">
-    <div>
-      <h1>📊 Admin Panel</h1>
-      <small style="color: #999; font-size: 12px;">v<span id="versionText">loading...</span></small>
-    </div>
+    <h1>📊 Admin Panel <small style="color: #999; font-size: 12px;">v.2</small></h1>
     <div class="header-actions">
-      <button class="settings-btn" id="changePasswordBtn">🔑 Change Password</button>
-      <button class="logout-btn" id="logoutBtn">Logout</button>
+      <button class="logout-btn" onclick="handleLogout()">Logout</button>
     </div>
   </div>
 
   <div class="container">
     <div class="main-content">
-      <div>
-        <!-- Add Project Form -->
-        <div class="add-project-form">
-          <h2>➕ Add New Project</h2>
-          <form id="addProjectForm">
-            <div class="form-group">
-              <label for="projectName">Project Name</label>
-              <input type="text" id="projectName" required placeholder="e.g., Website Redesign">
-            </div>
+      <h2>✅ Login Success!</h2>
+      <p>Welcome to Project Tracker Admin Panel</p>
 
-            <div class="form-group">
-              <label for="projectDesc">Description</label>
-              <input type="text" id="projectDesc" placeholder="Project description">
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="projectPriority">Priority</label>
-                <select id="projectPriority" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
-                  <option value="Low">Low</option>
-                  <option value="Medium" selected>Medium</option>
-                  <option value="High">High</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="projectStatus">Status</label>
-                <select id="projectStatus" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
-                  <option value="Pending" selected>Pending</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Completed">Completed</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="projectStart">Start Date</label>
-                <input type="date" id="projectStart">
-              </div>
-
-              <div class="form-group">
-                <label for="projectDeadline">Deadline</label>
-                <input type="date" id="projectDeadline">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="projectTeam">Team Members</label>
-              <input type="text" id="projectTeam" placeholder="e.g., John, Jane, Bob">
-            </div>
-
-            <div class="form-group">
-              <label for="projectProgress">Progress (%)</label>
-              <input type="number" id="projectProgress" min="0" max="100" value="0">
-            </div>
-
-            <div class="google-calendar-status" id="calendarStatus">
-              ⚠️ Not connected to Google Calendar
-            </div>
-
-            <button type="submit" class="btn">Add Project</button>
-            <div id="addProjectMessage"></div>
-          </form>
-        </div>
-
-        <!-- Projects List -->
-        <div class="projects-list">
-          <div class="projects-header">
-            <h2>📋 Projects (<span id="projectCount">0</span>)</h2>
-          </div>
-          <div id="projectsList"></div>
-        </div>
+      <div style="margin-top: 20px; padding: 15px; background: #f0f7ff; border-radius: 6px; font-size: 13px; color: #0066cc;">
+        <strong>📝 Features Coming:</strong>
+        <ul style="margin-left: 20px; margin-top: 10px;">
+          <li>Add/Edit/Delete Projects</li>
+          <li>Project Status Management</li>
+          <li>Google Calendar Sync</li>
+          <li>Password Change</li>
+        </ul>
       </div>
 
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <h3>⚙️ Quick Actions</h3>
-
-        <div class="sidebar-section">
-          <label>Google Calendar</label>
-          <button id="googleLoginBtn" style="background: #4285F4; color: white; font-weight: 600;">Sign in with Google</button>
-          <p style="font-size: 11px; color: #666; margin-top: 8px;">Auto-sync projects to your Google Calendar</p>
-        </div>
-
-        <div class="sidebar-section">
-          <label>Stats</label>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
-            <div style="background: #cfe2ff; padding: 10px; border-radius: 6px; text-align: center;">
-              <div style="font-weight: 600; color: #084298;" id="inProgressCount">0</div>
-              <div style="color: #084298; font-size: 11px;">In Progress</div>
-            </div>
-            <div style="background: #d1e7dd; padding: 10px; border-radius: 6px; text-align: center;">
-              <div style="font-weight: 600; color: #0f5132;" id="completedCount">0</div>
-              <div style="color: #0f5132; font-size: 11px;">Completed</div>
-            </div>
-          </div>
-        </div>
+      <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 6px; border-left: 4px solid #ffc107; font-size: 12px; color: #856404;">
+        <strong>ℹ️ Note:</strong> Full features will be added in next version. Currently focused on getting authentication working.
       </div>
     </div>
   </div>
 </div>
 
-<!-- Change Password Modal -->
-<div class="modal" id="changePasswordModal">
-  <div class="modal-content">
-    <h2>🔑 Change Admin Password</h2>
-    <form id="changePasswordForm">
-      <div class="form-group">
-        <label for="currentPassword">Current Password</label>
-        <input type="password" id="currentPassword" required>
-      </div>
-      <div class="form-group">
-        <label for="newPassword">New Password</label>
-        <input type="password" id="newPassword" required>
-      </div>
-      <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" required>
-      </div>
-      <div id="passwordError" class="error"></div>
-      <div id="passwordSuccess" class="success"></div>
-      <div class="modal-actions">
-        <button type="submit" class="btn-confirm">Change Password</button>
-        <button type="button" class="btn-cancel" onclick="document.getElementById('changePasswordModal').classList.remove('active')">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Edit Project Modal -->
-<div class="modal" id="editProjectModal">
-  <div class="modal-content">
-    <h2>✏️ Edit Project</h2>
-    <form id="editProjectForm">
-      <input type="hidden" id="editProjectId">
-      <div class="form-group">
-        <label for="editProjectName">Project Name</label>
-        <input type="text" id="editProjectName" required>
-      </div>
-      <div class="form-group">
-        <label for="editProjectDesc">Description</label>
-        <input type="text" id="editProjectDesc">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="editProjectPriority">Priority</label>
-          <select id="editProjectPriority" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="editProjectStatus">Status</label>
-          <select id="editProjectStatus" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="editProjectStart">Start Date</label>
-          <input type="date" id="editProjectStart">
-        </div>
-        <div class="form-group">
-          <label for="editProjectDeadline">Deadline</label>
-          <input type="date" id="editProjectDeadline">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="editProjectTeam">Team Members</label>
-        <input type="text" id="editProjectTeam">
-      </div>
-      <div class="form-group">
-        <label for="editProjectProgress">Progress (%)</label>
-        <input type="number" id="editProjectProgress" min="0" max="100">
-      </div>
-      <div id="editProjectMessage"></div>
-      <div class="modal-actions">
-        <button type="submit" class="btn-confirm">Save Changes</button>
-        <button type="button" class="btn-cancel" onclick="document.getElementById('editProjectModal').classList.remove('active')">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
-
 <script>
-  // Wait for Firebase to load
-  function waitForFirebase() {
-    return new Promise((resolve, reject) => {
-      let attempts = 0;
-      const maxAttempts = 50;
+  const FIRESTORE_API = 'https://firestore.googleapis.com/v1';
+  const PROJECT_ID = 'project-def0c';
+  const API_KEY = 'AIzaSyDtin7zWgo2f8-4dhxA8eSZlgvG7YxbpqQ';
 
-      const checkInterval = setInterval(() => {
-        attempts++;
-        console.log('Checking Firebase... attempt', attempts);
-        if (typeof firebase !== 'undefined' && firebase.initializeApp) {
-          clearInterval(checkInterval);
-          console.log('Firebase loaded successfully');
-          resolve();
-        } else if (attempts >= maxAttempts) {
-          clearInterval(checkInterval);
-          console.error('Firebase failed to load after', attempts, 'attempts');
-          reject(new Error('Firebase SDK failed to load'));
-        }
-      }, 200);
-    });
-  }
-
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDtin7zWgo2f8-4dhxA8eSZlgvG7YxbpqQ",
-    authDomain: "project-def0c.firebaseapp.com",
-    projectId: "project-def0c",
-    storageBucket: "project-def0c.firebasestorage.app",
-    messagingSenderId: "1027925892252",
-    appId: "1:1027925892252:web:0bb57698c8fe21e45ee159",
-    measurementId: "G-EE327ZKW0R"
-  };
-
-  // Google Client ID
-  const GOOGLE_CLIENT_ID = "478221208079-2qjvvtttvdshklbt0q4b7dc2cabjfhk4.apps.googleusercontent.com";
-
-  // State
-  let adminPassword = null;
-  let googleAccessToken = null;
-  let projects = [];
-  let db = null;
-  let firebaseApp = null;
-
-  // Load Version
-  async function loadVersion() {
-    try {
-      const response = await fetch('/ProjectTracker/version.json');
-      const versionData = await response.json();
-      const versionDisplay = `Project Tracker ${versionData.version}`;
-      document.getElementById('versionText').textContent = versionData.version;
-      if (document.getElementById('loginVersionText')) {
-        document.getElementById('loginVersionText').textContent = versionDisplay;
-      }
-      document.getElementById('pageTitle').textContent = `Admin Panel - ${versionDisplay}`;
-      console.log(`%c${versionDisplay}`, 'color: #667eea; font-size: 16px; font-weight: bold;');
-      console.log(`Release: ${versionData.releaseDate}`);
-      console.log('Features:', versionData.features);
-    } catch (error) {
-      document.getElementById('versionText').textContent = 'unknown';
-      console.error('Failed to load version:', error);
-    }
-  }
-
-  // Initialize
-  document.addEventListener('DOMContentLoaded', async () => {
-    loadVersion();
-    await waitForFirebase();
-    try {
-      firebaseApp = firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      await initAdmin();
-    } catch (error) {
-      console.error('Firebase init error:', error);
-    }
-  });
-
-  async function initAdmin() {
-    // Try to load admin password from Firestore
-    try {
-      const adminDoc = await db.collection('admin').doc('config').get();
-      if (adminDoc.exists) {
-        adminPassword = adminDoc.data().passwordHash;
-      } else {
-        // First time - set default password
-        await setDefaultPassword();
-      }
-    } catch (e) {
-      console.log('Initializing admin for first time');
-      await setDefaultPassword();
-    }
-
-    checkLoginStatus();
-  }
-
-  async function setDefaultPassword() {
-    const defaultPass = 'admin123'; // Change this!
-    const hash = await hashPassword(defaultPass);
-    await db.collection('admin').doc('config').set({
-      passwordHash: hash,
-      createdAt: new Date()
-    });
-    adminPassword = hash;
-  }
-
+  // Hash password
   async function hashPassword(password) {
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
@@ -747,343 +118,86 @@
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
-  function checkLoginStatus() {
-    const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
-    if (isLoggedIn) {
-      showDashboard();
-      loadProjects();
-      initGoogleAPI();
-    } else {
-      showLogin();
+  // Get admin password from Firestore
+  async function getAdminPassword() {
+    try {
+      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/admin/config?key=${API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.fields && data.fields.passwordHash) {
+        return data.fields.passwordHash.stringValue;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching admin password:', error);
+      return null;
     }
   }
 
+  // Handle login
+  async function handleLogin(event) {
+    event.preventDefault();
+    const password = document.getElementById('password').value;
+    const errorEl = document.getElementById('loginError');
+
+    try {
+      errorEl.textContent = '⏳ Checking password...';
+
+      const storedHash = await getAdminPassword();
+      if (!storedHash) {
+        errorEl.textContent = '❌ Admin config not found';
+        return;
+      }
+
+      const inputHash = await hashPassword(password);
+
+      if (inputHash === storedHash) {
+        localStorage.setItem('adminLoggedIn', 'true');
+        showDashboard();
+        errorEl.textContent = '';
+      } else {
+        errorEl.textContent = '❌ Invalid password';
+      }
+    } catch (error) {
+      errorEl.textContent = '❌ Error: ' + error.message;
+    }
+  }
+
+  // Handle logout
+  function handleLogout() {
+    localStorage.removeItem('adminLoggedIn');
+    document.getElementById('password').value = '';
+    showLogin();
+  }
+
+  // Show login page
   function showLogin() {
     document.getElementById('loginPage').style.display = 'flex';
     document.getElementById('dashboard').classList.remove('active');
   }
 
+  // Show dashboard
   function showDashboard() {
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('dashboard').classList.add('active');
   }
 
-  // Login
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const password = document.getElementById('password').value;
-    const hash = await hashPassword(password);
-
-    if (hash === adminPassword) {
-      localStorage.setItem('adminLoggedIn', 'true');
-      document.getElementById('password').value = '';
-      document.getElementById('loginError').textContent = '';
+  // Check login status on load
+  function checkLoginStatus() {
+    const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+    if (isLoggedIn) {
       showDashboard();
-      loadProjects();
-      initGoogleAPI();
     } else {
-      document.getElementById('loginError').textContent = 'Invalid password';
-    }
-  });
-
-  // Logout
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('adminLoggedIn');
-    googleAccessToken = null;
-    projects = [];
-    document.getElementById('projectsList').innerHTML = '';
-    showLogin();
-  });
-
-  // Change Password
-  document.getElementById('changePasswordBtn').addEventListener('click', () => {
-    document.getElementById('changePasswordModal').classList.add('active');
-  });
-
-  document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const current = document.getElementById('currentPassword').value;
-    const newPass = document.getElementById('newPassword').value;
-    const confirm = document.getElementById('confirmPassword').value;
-
-    if (newPass !== confirm) {
-      document.getElementById('passwordError').textContent = 'Passwords do not match';
-      return;
-    }
-
-    const currentHash = await hashPassword(current);
-    if (currentHash !== adminPassword) {
-      document.getElementById('passwordError').textContent = 'Current password is incorrect';
-      return;
-    }
-
-    const newHash = await hashPassword(newPass);
-    await db.collection('admin').doc('config').update({ passwordHash: newHash });
-    adminPassword = newHash;
-
-    document.getElementById('passwordSuccess').textContent = 'Password changed successfully!';
-    document.getElementById('currentPassword').value = '';
-    document.getElementById('newPassword').value = '';
-    document.getElementById('confirmPassword').value = '';
-    document.getElementById('passwordError').textContent = '';
-
-    setTimeout(() => {
-      document.getElementById('changePasswordModal').classList.remove('active');
-      document.getElementById('passwordSuccess').textContent = '';
-    }, 2000);
-  });
-
-  // Add Project
-  document.getElementById('addProjectForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById('projectName').value;
-    const desc = document.getElementById('projectDesc').value;
-    const priority = document.getElementById('projectPriority').value;
-    const status = document.getElementById('projectStatus').value;
-    const start = document.getElementById('projectStart').value;
-    const deadline = document.getElementById('projectDeadline').value;
-    const team = document.getElementById('projectTeam').value;
-    const progress = parseInt(document.getElementById('projectProgress').value) || 0;
-
-    const project = {
-      name,
-      description: desc,
-      priority,
-      status,
-      startDate: start ? new Date(start) : null,
-      deadline: deadline ? new Date(deadline) : null,
-      team: team.split(',').map(t => t.trim()).filter(t => t),
-      progress,
-      googleCalendarEventId: null,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    try {
-      const docRef = await db.collection('projects').add(project);
-
-      // Auto-sync to Google Calendar if connected
-      if (googleAccessToken && deadline) {
-        await addToGoogleCalendar(name, start, deadline, docRef.id);
-      }
-
-      document.getElementById('addProjectMessage').innerHTML = '<div class="success">✅ Project added successfully!</div>';
-      document.getElementById('addProjectForm').reset();
-      loadProjects();
-
-      setTimeout(() => {
-        document.getElementById('addProjectMessage').textContent = '';
-      }, 3000);
-    } catch (error) {
-      document.getElementById('addProjectMessage').innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
-    }
-  });
-
-  // Load Projects
-  async function loadProjects() {
-    try {
-      const snapshot = await db.collection('projects').orderBy('createdAt', 'desc').get();
-      projects = [];
-      document.getElementById('projectsList').innerHTML = '';
-
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        projects.push({ id: doc.id, ...data });
-
-        const statusClass = `status-${data.status.toLowerCase().replace(' ', '-')}`;
-        const startDate = data.startDate ? new Date(data.startDate).toLocaleDateString('th-TH') : '-';
-        const deadline = data.deadline ? new Date(data.deadline).toLocaleDateString('th-TH') : '-';
-
-        const html = `
-          <div class="project-item">
-            <div class="project-info">
-              <h3>${data.name}</h3>
-              <div class="project-meta">
-                <span class="meta-item">📅 Start: ${startDate}</span>
-                <span class="meta-item">⏰ Deadline: ${deadline}</span>
-                <span class="meta-item">👥 Team: ${data.team.join(', ') || 'N/A'}</span>
-                <span class="meta-item">📊 Progress: ${data.progress}%</span>
-                <span class="status-badge ${statusClass}">${data.status}</span>
-              </div>
-              <p style="font-size: 13px; color: #666; margin-top: 8px;">${data.description || ''}</p>
-            </div>
-            <div class="project-actions">
-              <select class="status-select" onchange="updateProjectStatus('${doc.id}', this.value)">
-                <option value="Pending" ${data.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                <option value="In Progress" ${data.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                <option value="Completed" ${data.status === 'Completed' ? 'selected' : ''}>Completed</option>
-              </select>
-              <button class="btn-small btn-edit" onclick="editProject('${doc.id}')">Edit</button>
-              <button class="btn-small btn-delete" onclick="deleteProject('${doc.id}')">Delete</button>
-            </div>
-          </div>
-        `;
-        document.getElementById('projectsList').innerHTML += html;
-      });
-
-      updateStats();
-      document.getElementById('projectCount').textContent = projects.length;
-    } catch (error) {
-      console.error('Error loading projects:', error);
+      showLogin();
     }
   }
 
-  // Update Project Status
-  async function updateProjectStatus(projectId, newStatus) {
-    try {
-      await db.collection('projects').doc(projectId).update({
-        status: newStatus,
-        updatedAt: new Date()
-      });
-      loadProjects();
-    } catch (error) {
-      alert('Error updating status: ' + error.message);
-    }
-  }
+  // Load version
+  document.getElementById('loginVersionText').textContent = 'Project Tracker v.2';
 
-  // Edit Project
-  function editProject(projectId) {
-    const project = projects.find(p => p.id === projectId);
-    if (!project) return;
-
-    document.getElementById('editProjectId').value = projectId;
-    document.getElementById('editProjectName').value = project.name;
-    document.getElementById('editProjectDesc').value = project.description || '';
-    document.getElementById('editProjectPriority').value = project.priority;
-    document.getElementById('editProjectStatus').value = project.status;
-    document.getElementById('editProjectStart').value = project.startDate ? project.startDate.toDate().toISOString().split('T')[0] : '';
-    document.getElementById('editProjectDeadline').value = project.deadline ? project.deadline.toDate().toISOString().split('T')[0] : '';
-    document.getElementById('editProjectTeam').value = project.team.join(', ');
-    document.getElementById('editProjectProgress').value = project.progress;
-
-    document.getElementById('editProjectModal').classList.add('active');
-  }
-
-  document.getElementById('editProjectForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const projectId = document.getElementById('editProjectId').value;
-    const updates = {
-      name: document.getElementById('editProjectName').value,
-      description: document.getElementById('editProjectDesc').value,
-      priority: document.getElementById('editProjectPriority').value,
-      status: document.getElementById('editProjectStatus').value,
-      startDate: document.getElementById('editProjectStart').value ? new Date(document.getElementById('editProjectStart').value) : null,
-      deadline: document.getElementById('editProjectDeadline').value ? new Date(document.getElementById('editProjectDeadline').value) : null,
-      team: document.getElementById('editProjectTeam').value.split(',').map(t => t.trim()).filter(t => t),
-      progress: parseInt(document.getElementById('editProjectProgress').value) || 0,
-      updatedAt: new Date()
-    };
-
-    try {
-      await db.collection('projects').doc(projectId).update(updates);
-      document.getElementById('editProjectMessage').innerHTML = '<div class="success">✅ Project updated!</div>';
-      loadProjects();
-
-      setTimeout(() => {
-        document.getElementById('editProjectModal').classList.remove('active');
-        document.getElementById('editProjectMessage').textContent = '';
-      }, 1500);
-    } catch (error) {
-      document.getElementById('editProjectMessage').innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
-    }
-  });
-
-  // Delete Project
-  async function deleteProject(projectId) {
-    if (!confirm('Are you sure you want to delete this project?')) return;
-
-    try {
-      await db.collection('projects').doc(projectId).delete();
-      loadProjects();
-    } catch (error) {
-      alert('Error deleting project: ' + error.message);
-    }
-  }
-
-  // Update Stats
-  function updateStats() {
-    const inProgress = projects.filter(p => p.status === 'In Progress').length;
-    const completed = projects.filter(p => p.status === 'Completed').length;
-
-    document.getElementById('inProgressCount').textContent = inProgress;
-    document.getElementById('completedCount').textContent = completed;
-  }
-
-  // Google Calendar API
-  function initGoogleAPI() {
-    gapi.load('client:auth2', initGoogleAuth);
-  }
-
-  function initGoogleAuth() {
-    gapi.auth2.init({
-      client_id: GOOGLE_CLIENT_ID,
-      scope: 'https://www.googleapis.com/auth/calendar'
-    });
-
-    document.getElementById('googleLoginBtn').addEventListener('click', () => {
-      gapi.auth2.getAuthInstance().signIn().then(user => {
-        googleAccessToken = user.getAuthResponse().id_token;
-        updateGoogleCalendarStatus();
-        gapi.client.load('calendar', 'v3', () => {});
-      }).catch(error => {
-        console.log('Google login error:', error);
-      });
-    });
-
-    // Check if already signed in
-    const auth = gapi.auth2.getAuthInstance();
-    if (auth.isSignedIn.get()) {
-      const user = auth.currentUser.get();
-      googleAccessToken = user.getAuthResponse().id_token;
-      updateGoogleCalendarStatus();
-    }
-  }
-
-  function updateGoogleCalendarStatus() {
-    const statusEl = document.getElementById('calendarStatus');
-    if (googleAccessToken) {
-      statusEl.textContent = '✅ Connected to Google Calendar';
-      statusEl.classList.add('connected');
-    } else {
-      statusEl.textContent = '⚠️ Not connected to Google Calendar';
-      statusEl.classList.remove('connected');
-    }
-  }
-
-  async function addToGoogleCalendar(title, startDate, endDate, projectId) {
-    if (!googleAccessToken || !gapi.client.calendar) return;
-
-    try {
-      const event = {
-        summary: title,
-        description: `Project Tracker ID: ${projectId}`,
-        start: {
-          date: startDate || endDate
-        },
-        end: {
-          date: endDate || startDate
-        }
-      };
-
-      const request = gapi.client.calendar.events.insert({
-        calendarId: 'primary',
-        resource: event
-      });
-
-      request.execute((result) => {
-        if (result.id) {
-          // Save event ID to Firestore
-          db.collection('projects').doc(projectId).update({
-            googleCalendarEventId: result.id
-          });
-        }
-      });
-    } catch (error) {
-      console.log('Google Calendar error:', error);
-    }
-  }
+  // Initialize
+  checkLoginStatus();
 </script>
 
 </body>
