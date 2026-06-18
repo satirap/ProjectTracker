@@ -420,6 +420,9 @@
       </div>
       <button type="submit" class="btn">Login</button>
     </form>
+    <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #999;">
+      <span id="loginVersionText">Project Tracker v.1</span>
+    </div>
   </div>
 </div>
 
@@ -680,9 +683,13 @@
     try {
       const response = await fetch('/ProjectTracker/version.json');
       const versionData = await response.json();
+      const versionDisplay = `Project Tracker ${versionData.version}`;
       document.getElementById('versionText').textContent = versionData.version;
-      document.getElementById('pageTitle').textContent = `Admin Panel - Project Tracker ${versionData.version}`;
-      console.log(`%cProject Tracker ${versionData.version}`, 'color: #667eea; font-size: 16px; font-weight: bold;');
+      if (document.getElementById('loginVersionText')) {
+        document.getElementById('loginVersionText').textContent = versionDisplay;
+      }
+      document.getElementById('pageTitle').textContent = `Admin Panel - ${versionDisplay}`;
+      console.log(`%c${versionDisplay}`, 'color: #667eea; font-size: 16px; font-weight: bold;');
       console.log(`Release: ${versionData.releaseDate}`);
       console.log('Features:', versionData.features);
     } catch (error) {
