@@ -426,7 +426,10 @@
 <!-- Dashboard -->
 <div class="dashboard" id="dashboard">
   <div class="header">
-    <h1>📊 Admin Panel</h1>
+    <div>
+      <h1>📊 Admin Panel</h1>
+      <small style="color: #999; font-size: 12px;">v<span id="versionText">loading...</span></small>
+    </div>
     <div class="header-actions">
       <button class="settings-btn" id="changePasswordBtn">🔑 Change Password</button>
       <button class="logout-btn" id="logoutBtn">Logout</button>
@@ -666,8 +669,20 @@
   let db = null;
   let firebaseApp = null;
 
+  // Load Version
+  async function loadVersion() {
+    try {
+      const response = await fetch('/ProjectTracker/version.json');
+      const versionData = await response.json();
+      document.getElementById('versionText').textContent = versionData.version;
+    } catch (error) {
+      document.getElementById('versionText').textContent = 'unknown';
+    }
+  }
+
   // Initialize
   document.addEventListener('DOMContentLoaded', async () => {
+    loadVersion();
     await waitForFirebase();
     try {
       firebaseApp = firebase.initializeApp(firebaseConfig);
