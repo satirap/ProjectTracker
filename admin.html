@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Project Tracker</title>
+  <title id="pageTitle">Admin Panel - Project Tracker</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -681,8 +681,13 @@
       const response = await fetch('/ProjectTracker/version.json');
       const versionData = await response.json();
       document.getElementById('versionText').textContent = versionData.version;
+      document.getElementById('pageTitle').textContent = `Admin Panel - Project Tracker ${versionData.version}`;
+      console.log(`%cProject Tracker ${versionData.version}`, 'color: #667eea; font-size: 16px; font-weight: bold;');
+      console.log(`Release: ${versionData.releaseDate}`);
+      console.log('Features:', versionData.features);
     } catch (error) {
       document.getElementById('versionText').textContent = 'unknown';
+      console.error('Failed to load version:', error);
     }
   }
 

@@ -1,6 +1,15 @@
 {
-  "version": "1.0.0",
+  "version": "v.1",
   "name": "Project Tracker",
   "releaseDate": "2025-06-18",
-  "description": "Admin Panel for Project Management with Firebase & Google Calendar Integration"
+  "description": "Admin Panel for Project Management with Firebase & Google Calendar Integration",
+  "features": [
+    "Admin Login with Password",
+    "Project Management (Add/Edit/Delete)",
+    "Status Management (Pending/In Progress/Completed)",
+    "Firebase Firestore Integration",
+    "Google Calendar API Sync",
+    "Password Change",
+    "Project Statistics Dashboard"
+  ]
 }
