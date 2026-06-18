@@ -627,9 +627,24 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
-<script src="https://apis.google.com/js/api.js"></script>
 
 <script>
+  // Wait for Firebase to load
+  function waitForFirebase() {
+    return new Promise((resolve) => {
+      const checkInterval = setInterval(() => {
+        if (typeof firebase !== 'undefined') {
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100);
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        resolve();
+      }, 5000);
+    });
+  }
+
   // Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyDtin7zWgo2f8-4dhxA8eSZlgvG7YxbpqQ",
@@ -644,18 +659,23 @@
   // Google Client ID
   const GOOGLE_CLIENT_ID = "478221208079-2qjvvtttvdshklbt0q4b7dc2cabjfhk4.apps.googleusercontent.com";
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
   // State
   let adminPassword = null;
   let googleAccessToken = null;
   let projects = [];
+  let db = null;
+  let firebaseApp = null;
 
   // Initialize
   document.addEventListener('DOMContentLoaded', async () => {
-    await initAdmin();
+    await waitForFirebase();
+    try {
+      firebaseApp = firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      await initAdmin();
+    } catch (error) {
+      console.error('Firebase init error:', error);
+    }
   });
 
   async function initAdmin() {
