@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project Tracker - Dashboard</title>
+  <title>Project Tracker - Dashboard v.6</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f7fa; color: #333; }
@@ -19,92 +19,77 @@
 
     .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
 
-    .nav {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 40px;
-    }
-    .nav a, .nav button {
+    .nav { text-align: center; margin-bottom: 40px; }
+    .nav a {
       padding: 12px 24px;
       background: white;
       color: #667eea;
       text-decoration: none;
       border: 2px solid #667eea;
       border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
       font-weight: 600;
-      transition: all 0.3s;
+      display: inline-block;
     }
-    .nav a:hover, .nav button:hover {
-      background: #667eea;
-      color: white;
+    .nav a:hover { background: #667eea; color: white; }
+
+    .org-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+
+    .org-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .org-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     }
 
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
+    .org-card h3 { margin-bottom: 8px; font-size: 18px; }
+    .org-card p { font-size: 13px; color: #666; margin-bottom: 12px; }
+
+    .org-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat { background: #f9f9f9; padding: 10px; border-radius: 6px; text-align: center; }
+    .stat-num { font-size: 18px; font-weight: bold; color: #667eea; }
+    .stat-label { font-size: 11px; color: #666; margin-top: 4px; }
+
+    .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
 
     .project-card {
       background: white;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: transform 0.3s;
     }
-    .project-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
+    .project-card:hover { transform: translateY(-2px); }
 
     .project-card h3 { margin-bottom: 8px; font-size: 16px; }
-    .project-meta {
-      display: flex;
-      gap: 10px;
+
+    .project-timeline {
       font-size: 12px;
       color: #666;
+      margin-bottom: 12px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 6px;
+    }
+
+    .phases-list { margin-top: 12px; }
+    .phase-item {
+      background: #f0f7ff;
+      padding: 10px;
+      border-radius: 6px;
       margin-bottom: 8px;
-      flex-wrap: wrap;
+      border-left: 4px solid #667eea;
     }
-    .project-desc { font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.4; }
+    .phase-name { font-weight: 600; font-size: 13px; }
+    .phase-tasks { font-size: 11px; color: #666; margin-top: 4px; }
 
-    .status-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .status-pending { background: #fff3cd; color: #856404; }
-    .status-progress { background: #cfe2ff; color: #084298; }
-    .status-completed { background: #d1e7dd; color: #0f5132; }
-
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #999;
-    }
+    .empty-state { text-align: center; padding: 60px 20px; color: #999; }
     .empty-state h2 { font-size: 20px; margin-bottom: 10px; color: #666; }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 40px;
-    }
-    .stat-card {
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .stat-number { font-size: 32px; font-weight: bold; color: #667eea; margin-bottom: 8px; }
-    .stat-label { font-size: 14px; color: #666; }
 
     .footer { text-align: center; padding: 40px 20px; color: #999; font-size: 12px; border-top: 1px solid #eee; }
   </style>
@@ -112,45 +97,20 @@
 <body>
 
 <div class="header">
-  <h1>🎯 Project Tracker</h1>
-  <p>Keep track of all your projects in one place</p>
+  <h1>📊 Project Tracker</h1>
+  <p>Monitor all your organizations, projects, and tasks</p>
 </div>
 
 <div class="container">
   <div class="nav">
-    <button onclick="window.location.href='/ProjectTracker/admin.html'">
-      📊 Go to Admin Panel
-    </button>
+    <a href="/ProjectTracker/admin.html">⚙️ Admin Panel</a>
   </div>
 
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat-card">
-      <div class="stat-number" id="totalCount">0</div>
-      <div class="stat-label">Total Projects</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number" id="inProgressCount">0</div>
-      <div class="stat-label">In Progress</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number" id="completedCount">0</div>
-      <div class="stat-label">Completed</div>
-    </div>
-  </div>
-
-  <!-- Projects List -->
-  <h2 style="margin-bottom: 20px;">📋 Projects</h2>
-  <div class="projects-grid" id="projectsList"></div>
-
-  <div id="emptyState" class="empty-state" style="display: none;">
-    <h2>No projects yet</h2>
-    <p>Go to Admin Panel to create your first project</p>
-  </div>
+  <div id="content"></div>
 </div>
 
 <div class="footer">
-  <p>Project Tracker v.5 | <a href="/ProjectTracker/admin.html" style="color: #667eea; text-decoration: none;">Admin Panel</a></p>
+  <p>Project Tracker v.6 | Organizations > Projects > Phases > Tasks</p>
 </div>
 
 <script>
@@ -158,80 +118,166 @@
   const PROJECT_ID = 'project-def0c';
   const API_KEY = 'AIzaSyDtin7zWgo2f8-4dhxA8eSZlgvG7YxbpqQ';
 
-  let projects = [];
-
-  // Load projects from Firestore
-  async function loadProjects() {
+  // Load and display data
+  async function loadDashboard() {
     try {
-      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/projects?key=${API_KEY}`;
-      const response = await fetch(url);
-      const data = await response.json();
+      const orgs = await loadOrganizations();
+      const projects = await loadProjects();
+      const phases = await loadPhases();
 
-      projects = [];
-      document.getElementById('projectsList').innerHTML = '';
-
-      if (data.documents && data.documents.length > 0) {
-        data.documents.forEach(doc => {
-          const fields = doc.fields;
-          const project = {
-            name: fields.name?.stringValue || '',
-            description: fields.description?.stringValue || '',
-            status: fields.status?.stringValue || 'Pending',
-            priority: fields.priority?.stringValue || 'Medium',
-            startDate: fields.startDate?.stringValue || '',
-            deadline: fields.deadline?.stringValue || '',
-            team: fields.team?.arrayValue?.values?.map(v => v.stringValue) || [],
-            progress: fields.progress?.integerValue || 0
-          };
-          projects.push(project);
-          renderProject(project);
-        });
-
-        document.getElementById('emptyState').style.display = 'none';
-      } else {
-        document.getElementById('emptyState').style.display = 'block';
+      if (orgs.length === 0) {
+        document.getElementById('content').innerHTML = `
+          <div class="empty-state">
+            <h2>No organizations yet</h2>
+            <p>Go to Admin Panel to create your first organization</p>
+          </div>
+        `;
+        return;
       }
 
-      updateStats();
+      renderDashboard(orgs, projects, phases);
     } catch (error) {
-      console.error('Error loading projects:', error);
+      console.error('Error:', error);
+      document.getElementById('content').innerHTML = '<p>Error loading data</p>';
     }
   }
 
-  // Render project card
-  function renderProject(project) {
-    const statusClass = `status-${project.status.toLowerCase().replace(' ', '-')}`;
-    const startDate = project.startDate ? new Date(project.startDate).toLocaleDateString('th-TH') : '-';
-    const deadline = project.deadline ? new Date(project.deadline).toLocaleDateString('th-TH') : '-';
+  async function loadOrganizations() {
+    const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/organizations?key=${API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
 
-    const html = `
-      <div class="project-card">
-        <h3>${project.name}</h3>
-        <div class="project-meta">
-          <span>📅 ${startDate}</span>
-          <span>⏰ ${deadline}</span>
-          <span>📊 ${project.progress}%</span>
-          <span class="status-badge ${statusClass}">${project.status}</span>
-        </div>
-        ${project.description ? `<p class="project-desc">${project.description}</p>` : ''}
-        ${project.team.length > 0 ? `<div style="font-size: 12px; color: #666;">👥 ${project.team.join(', ')}</div>` : ''}
-      </div>
-    `;
-    document.getElementById('projectsList').innerHTML += html;
+    return data.documents ? data.documents.map(doc => ({
+      id: doc.name.split('/').pop(),
+      name: doc.fields.name?.stringValue || '',
+      description: doc.fields.description?.stringValue || ''
+    })) : [];
   }
 
-  // Update stats
-  function updateStats() {
-    document.getElementById('totalCount').textContent = projects.length;
-    document.getElementById('inProgressCount').textContent = projects.filter(p => p.status === 'In Progress').length;
-    document.getElementById('completedCount').textContent = projects.filter(p => p.status === 'Completed').length;
+  async function loadProjects() {
+    const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/projects?key=${API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    return data.documents ? data.documents.map(doc => ({
+      id: doc.name.split('/').pop(),
+      organizationId: doc.fields.organizationId?.stringValue || '',
+      name: doc.fields.name?.stringValue || '',
+      startDate: doc.fields.startDate?.stringValue || '',
+      endDate: doc.fields.endDate?.stringValue || ''
+    })) : [];
+  }
+
+  async function loadPhases() {
+    const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/phases?key=${API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    return data.documents ? data.documents.map(doc => ({
+      id: doc.name.split('/').pop(),
+      projectId: doc.fields.projectId?.stringValue || '',
+      name: doc.fields.name?.stringValue || '',
+      startDate: doc.fields.startDate?.stringValue || '',
+      endDate: doc.fields.endDate?.stringValue || ''
+    })) : [];
+  }
+
+  async function loadTasks() {
+    const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/tasks?key=${API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    return data.documents ? data.documents.map(doc => ({
+      id: doc.name.split('/').pop(),
+      phaseId: doc.fields.phaseId?.stringValue || '',
+      name: doc.fields.name?.stringValue || '',
+      dueDate: doc.fields.dueDate?.stringValue || '',
+      isCompleted: doc.fields.isCompleted?.booleanValue || false
+    })) : [];
+  }
+
+  function renderDashboard(orgs, projects, phases) {
+    let html = '<h2 style="margin-bottom: 20px;">📦 Organizations</h2>';
+    html += '<div class="org-grid">';
+
+    orgs.forEach(org => {
+      const orgProjects = projects.filter(p => p.organizationId === org.id);
+      const totalTasks = orgProjects.reduce((sum, p) => {
+        const phasesForProject = phases.filter(ph => ph.projectId === p.id);
+        return sum + phasesForProject.length;
+      }, 0);
+
+      html += `
+        <div class="org-card">
+          <h3>${org.name}</h3>
+          <p>${org.description || 'No description'}</p>
+          <div class="org-stats">
+            <div class="stat">
+              <div class="stat-num">${orgProjects.length}</div>
+              <div class="stat-label">Projects</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">${totalTasks}</div>
+              <div class="stat-label">Phases</div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    html += '</div>';
+
+    // Projects by organization
+    orgs.forEach(org => {
+      const orgProjects = projects.filter(p => p.organizationId === org.id);
+      if (orgProjects.length === 0) return;
+
+      html += `<h2 style="margin-top: 40px; margin-bottom: 20px;">📊 ${org.name} - Projects</h2>`;
+      html += '<div class="project-grid">';
+
+      orgProjects.forEach(proj => {
+        const projPhases = phases.filter(p => p.projectId === proj.id);
+        const startDate = proj.startDate ? new Date(proj.startDate).toLocaleDateString('th-TH') : '-';
+        const endDate = proj.endDate ? new Date(proj.endDate).toLocaleDateString('th-TH') : '-';
+
+        html += `
+          <div class="project-card">
+            <h3>${proj.name}</h3>
+            <div class="project-timeline">
+              📅 ${startDate} → ${endDate}
+            </div>
+            <div class="phases-list">
+        `;
+
+        projPhases.forEach(phase => {
+          html += `
+            <div class="phase-item">
+              <div class="phase-name">${phase.name}</div>
+              <div class="phase-tasks">
+                📍 ${phase.startDate ? new Date(phase.startDate).toLocaleDateString('th-TH') : '-'}
+                → ${phase.endDate ? new Date(phase.endDate).toLocaleDateString('th-TH') : '-'}
+              </div>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      });
+
+      html += '</div>';
+    });
+
+    document.getElementById('content').innerHTML = html;
   }
 
   // Initialize
-  loadProjects();
+  loadDashboard();
 
-  // Reload every 10 seconds
-  setInterval(loadProjects, 10000);
+  // Reload every 30 seconds
+  setInterval(loadDashboard, 30000);
 </script>
 
 </body>

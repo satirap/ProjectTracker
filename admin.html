@@ -3,25 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Project Tracker v.4</title>
+  <title>Project Tracker Admin - v.6</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f7fa; color: #333; }
 
-    .header { background: white; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; }
     .header h1 { font-size: 24px; margin: 0; }
-    .header small { color: #999; font-size: 12px; margin-left: 10px; }
 
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
-    .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px; }
+    .breadcrumb { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; font-size: 13px; }
+    .breadcrumb button { background: none; border: none; color: #667eea; cursor: pointer; text-decoration: underline; }
+    .breadcrumb span { color: #999; }
 
-    .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .card h2 { margin-bottom: 20px; font-size: 18px; }
+    .main-grid { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
+
+    .sidebar { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); height: fit-content; }
+    .sidebar h3 { margin-bottom: 15px; font-size: 14px; font-weight: 600; }
+    .sidebar-item {
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .sidebar-item:hover { background: #f0f0f0; }
+    .sidebar-item.active { background: #667eea; color: white; border-color: #667eea; }
+    .sidebar-add { background: #667eea; color: white; padding: 10px; border-radius: 6px; cursor: pointer; text-align: center; font-weight: 600; }
+
+    .content { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .content h2 { margin-bottom: 20px; font-size: 18px; }
 
     .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: #555; font-size: 13px; }
-    .form-group input, .form-group select, .form-group textarea {
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; color: #555; }
+    .form-group input, .form-group textarea, .form-group select {
       width: 100%;
       padding: 10px;
       border: 1px solid #ddd;
@@ -29,158 +47,168 @@
       font-size: 13px;
       font-family: inherit;
     }
-    .form-group textarea { resize: vertical; min-height: 80px; }
 
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-    .btn {
-      padding: 10px 16px;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
+    .btn { padding: 10px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.3s; }
     .btn:hover { background: #5568d3; }
-    .btn-small { padding: 6px 12px; font-size: 12px; }
-    .btn-delete { background: #e74c3c; }
-    .btn-delete:hover { background: #c0392b; }
+    .btn-secondary { background: #f0f0f0; color: #333; }
+    .btn-secondary:hover { background: #e0e0e0; }
+    .btn-danger { background: #e74c3c; }
+    .btn-danger:hover { background: #c0392b; }
 
-    .projects-container { margin-top: 30px; }
-    .project-card {
-      background: #f9f9f9;
-      border: 1px solid #eee;
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-    }
-    .project-card h3 { margin-bottom: 8px; font-size: 15px; }
-    .project-meta { display: flex; gap: 15px; font-size: 12px; color: #666; margin-bottom: 10px; flex-wrap: wrap; }
-    .status-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .status-pending { background: #fff3cd; color: #856404; }
-    .status-progress { background: #cfe2ff; color: #084298; }
-    .status-completed { background: #d1e7dd; color: #0f5132; }
+    .items-list { margin-top: 20px; }
+    .item-card { background: #f9f9f9; padding: 15px; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: start; }
+    .item-info h4 { margin-bottom: 5px; font-size: 14px; }
+    .item-meta { font-size: 12px; color: #666; }
+    .item-actions { display: flex; gap: 8px; }
+    .item-actions button { padding: 6px 12px; font-size: 12px; }
 
-    .project-actions { display: flex; gap: 8px; margin-top: 10px; }
-    .project-actions select { padding: 6px; font-size: 12px; border: 1px solid #ddd; border-radius: 4px; flex: 1; }
+    .empty-state { text-align: center; padding: 40px; color: #999; }
 
-    .sidebar h3 { margin-bottom: 15px; font-size: 14px; }
-    .stat-box {
-      background: #f9f9f9;
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      text-align: center;
-    }
-    .stat-number { font-size: 24px; font-weight: bold; color: #667eea; }
-    .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
-
-    .success { color: #27ae60; font-size: 12px; margin-top: 5px; }
-    .error { color: #e74c3c; font-size: 12px; margin-top: 5px; }
+    .message { padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; }
+    .message.success { background: #d1e7dd; color: #0f5132; }
+    .message.error { background: #f8d7da; color: #842029; }
   </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>📊 Admin Panel <small>v.4</small></h1>
+  <h1>🏢 Project Tracker Admin v.6</h1>
 </div>
 
 <div class="container">
+  <div class="breadcrumb">
+    <span id="breadcrumbText">Organizations</span>
+  </div>
+
   <div class="main-grid">
-    <!-- Main Content -->
-    <div>
-      <!-- Add Project -->
-      <div class="card">
-        <h2>➕ Add New Project</h2>
-        <form id="addProjectForm" onsubmit="addProject(event)">
-          <div class="form-group">
-            <label>Project Name *</label>
-            <input type="text" id="projectName" required placeholder="e.g., Website Redesign">
-          </div>
-
-          <div class="form-group">
-            <label>Description</label>
-            <textarea id="projectDesc" placeholder="Project description"></textarea>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Priority</label>
-              <select id="projectPriority">
-                <option value="Low">Low</option>
-                <option value="Medium" selected>Medium</option>
-                <option value="High">High</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Status</label>
-              <select id="projectStatus">
-                <option value="Pending" selected>Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Start Date</label>
-              <input type="date" id="projectStart">
-            </div>
-            <div class="form-group">
-              <label>Deadline</label>
-              <input type="date" id="projectDeadline">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Team Members</label>
-            <input type="text" id="projectTeam" placeholder="e.g., John, Jane, Bob">
-          </div>
-
-          <div class="form-group">
-            <label>Progress (%)</label>
-            <input type="number" id="projectProgress" min="0" max="100" value="0">
-          </div>
-
-          <button type="submit" class="btn">Add Project</button>
-          <div id="addMessage"></div>
-        </form>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div>
+        <h3>📦 Organizations</h3>
+        <div id="orgsList"></div>
+        <div class="sidebar-add" onclick="showNewOrgForm()">+ New Organization</div>
       </div>
 
-      <!-- Projects List -->
-      <div class="card projects-container">
-        <h2>📋 Projects (<span id="projectCount">0</span>)</h2>
+      <div style="margin-top: 30px; display: none;" id="projectsSection">
+        <h3>📊 Projects</h3>
         <div id="projectsList"></div>
+        <div class="sidebar-add" onclick="showNewProjectForm()">+ New Project</div>
+      </div>
+
+      <div style="margin-top: 30px; display: none;" id="phasesSection">
+        <h3>📋 Phases</h3>
+        <div id="phasesList"></div>
+        <div class="sidebar-add" onclick="showNewPhaseForm()">+ New Phase</div>
+      </div>
+
+      <div style="margin-top: 30px; display: none;" id="tasksSection">
+        <h3>✓ Tasks</h3>
+        <div id="tasksList"></div>
+        <div class="sidebar-add" onclick="showNewTaskForm()">+ New Task</div>
       </div>
     </div>
 
-    <!-- Sidebar -->
-    <div class="card">
-      <h3>📊 Statistics</h3>
-
-      <div class="stat-box">
-        <div class="stat-number" id="totalCount">0</div>
-        <div class="stat-label">Total Projects</div>
+    <!-- Content -->
+    <div class="content">
+      <div id="orgForm" style="display: none;">
+        <h2>New Organization</h2>
+        <div id="orgMessage"></div>
+        <div class="form-group">
+          <label>Organization Name *</label>
+          <input type="text" id="orgName" placeholder="e.g., Engineering Team">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="orgDesc" placeholder="Description"></textarea>
+        </div>
+        <button class="btn" onclick="createOrganization()">Create</button>
+        <button class="btn btn-secondary" onclick="closeForm()">Cancel</button>
       </div>
 
-      <div class="stat-box">
-        <div class="stat-number" id="inProgressCount">0</div>
-        <div class="stat-label">In Progress</div>
+      <div id="projectForm" style="display: none;">
+        <h2>New Project</h2>
+        <div id="projectMessage"></div>
+        <div class="form-group">
+          <label>Project Name *</label>
+          <input type="text" id="projectName" placeholder="e.g., Website Redesign">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="projectDesc" placeholder="Description"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Date *</label>
+            <input type="date" id="projectStart" required>
+          </div>
+          <div class="form-group">
+            <label>End Date *</label>
+            <input type="date" id="projectEnd" required>
+          </div>
+        </div>
+        <button class="btn" onclick="createProject()">Create</button>
+        <button class="btn btn-secondary" onclick="closeForm()">Cancel</button>
       </div>
 
-      <div class="stat-box">
-        <div class="stat-number" id="completedCount">0</div>
-        <div class="stat-label">Completed</div>
+      <div id="phaseForm" style="display: none;">
+        <h2>New Phase</h2>
+        <div id="phaseMessage"></div>
+        <div class="form-group">
+          <label>Phase Name *</label>
+          <input type="text" id="phaseName" placeholder="e.g., Planning">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="phaseDesc" placeholder="Description"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Date *</label>
+            <input type="date" id="phaseStart" required>
+          </div>
+          <div class="form-group">
+            <label>End Date *</label>
+            <input type="date" id="phaseEnd" required>
+          </div>
+        </div>
+        <button class="btn" onclick="createPhase()">Create</button>
+        <button class="btn btn-secondary" onclick="closeForm()">Cancel</button>
+      </div>
+
+      <div id="taskForm" style="display: none;">
+        <h2>New Task</h2>
+        <div id="taskMessage"></div>
+        <div class="form-group">
+          <label>Task Name *</label>
+          <input type="text" id="taskName" placeholder="e.g., Design mockups">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="taskDesc" placeholder="Description"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Due Date</label>
+          <input type="date" id="taskDueDate">
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="taskAutoSync"> Add to Google Calendar
+          </label>
+        </div>
+        <button class="btn" onclick="createTask()">Create</button>
+        <button class="btn btn-secondary" onclick="closeForm()">Cancel</button>
+      </div>
+
+      <div id="emptyState" style="display: none;">
+        <div class="empty-state">
+          <p>👈 Select an organization to get started</p>
+        </div>
+      </div>
+
+      <div id="detailsView" style="display: none;">
+        <div id="detailsContent"></div>
       </div>
     </div>
   </div>
@@ -191,93 +219,252 @@
   const PROJECT_ID = 'project-def0c';
   const API_KEY = 'AIzaSyDtin7zWgo2f8-4dhxA8eSZlgvG7YxbpqQ';
 
-  let projects = [];
+  let state = {
+    selectedOrg: null,
+    selectedProject: null,
+    selectedPhase: null,
+    orgs: [],
+    projects: [],
+    phases: [],
+    tasks: []
+  };
 
-  // Load projects from Firestore
+  // Load organizations
+  async function loadOrganizations() {
+    try {
+      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/organizations?key=${API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      state.orgs = [];
+      document.getElementById('orgsList').innerHTML = '';
+
+      if (data.documents) {
+        data.documents.forEach(doc => {
+          const fields = doc.fields;
+          const org = {
+            id: doc.name.split('/').pop(),
+            name: fields.name?.stringValue || '',
+            description: fields.description?.stringValue || ''
+          };
+          state.orgs.push(org);
+          renderOrgItem(org);
+        });
+      }
+
+      if (state.orgs.length === 0) {
+        document.getElementById('emptyState').style.display = 'block';
+      }
+    } catch (error) {
+      console.error('Error loading orgs:', error);
+    }
+  }
+
+  // Render org in sidebar
+  function renderOrgItem(org) {
+    const div = document.createElement('div');
+    div.className = `sidebar-item ${state.selectedOrg?.id === org.id ? 'active' : ''}`;
+    div.textContent = org.name;
+    div.onclick = () => selectOrganization(org);
+    document.getElementById('orgsList').appendChild(div);
+  }
+
+  // Select organization
+  function selectOrganization(org) {
+    state.selectedOrg = org;
+    state.selectedProject = null;
+    state.selectedPhase = null;
+    loadOrganizations();
+    loadProjects();
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('projectsSection').style.display = 'block';
+    document.getElementById('phasesSection').style.display = 'none';
+    document.getElementById('tasksSection').style.display = 'none';
+  }
+
+  // Load projects
   async function loadProjects() {
+    if (!state.selectedOrg) return;
+
     try {
       const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/projects?key=${API_KEY}`;
       const response = await fetch(url);
       const data = await response.json();
 
-      projects = [];
+      state.projects = [];
       document.getElementById('projectsList').innerHTML = '';
 
       if (data.documents) {
         data.documents.forEach(doc => {
           const fields = doc.fields;
-          const id = doc.name.split('/').pop();
-          const project = {
-            id,
-            name: fields.name?.stringValue || '',
-            description: fields.description?.stringValue || '',
-            status: fields.status?.stringValue || 'Pending',
-            priority: fields.priority?.stringValue || 'Medium',
-            startDate: fields.startDate?.stringValue || '',
-            deadline: fields.deadline?.stringValue || '',
-            team: fields.team?.arrayValue?.values?.map(v => v.stringValue) || [],
-            progress: fields.progress?.integerValue || 0
-          };
-          projects.push(project);
-          renderProject(project);
+          if (fields.organizationId?.stringValue === state.selectedOrg.id) {
+            const project = {
+              id: doc.name.split('/').pop(),
+              name: fields.name?.stringValue || '',
+              startDate: fields.startDate?.stringValue || '',
+              endDate: fields.endDate?.stringValue || ''
+            };
+            state.projects.push(project);
+            renderProjectItem(project);
+          }
         });
       }
-
-      updateStats();
     } catch (error) {
       console.error('Error loading projects:', error);
     }
   }
 
-  // Render project card
-  function renderProject(project) {
-    const statusClass = `status-${project.status.toLowerCase().replace(' ', '-')}`;
-    const startDate = project.startDate ? new Date(project.startDate).toLocaleDateString('th-TH') : '-';
-    const deadline = project.deadline ? new Date(project.deadline).toLocaleDateString('th-TH') : '-';
-
-    const html = `
-      <div class="project-card">
-        <h3>${project.name}</h3>
-        <div class="project-meta">
-          <span>📅 ${startDate}</span>
-          <span>⏰ ${deadline}</span>
-          <span>👥 ${project.team.join(', ') || 'N/A'}</span>
-          <span>📊 ${project.progress}%</span>
-          <span class="status-badge ${statusClass}">${project.status}</span>
-        </div>
-        <p style="font-size: 13px; color: #666; margin-bottom: 10px;">${project.description || ''}</p>
-        <div class="project-actions">
-          <select onchange="updateStatus('${project.id}', this.value)">
-            <option value="Pending" ${project.status === 'Pending' ? 'selected' : ''}>Pending</option>
-            <option value="In Progress" ${project.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-            <option value="Completed" ${project.status === 'Completed' ? 'selected' : ''}>Completed</option>
-          </select>
-          <button class="btn btn-small btn-delete" onclick="deleteProject('${project.id}')">Delete</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('projectsList').innerHTML += html;
+  // Render project in sidebar
+  function renderProjectItem(project) {
+    const div = document.createElement('div');
+    div.className = `sidebar-item ${state.selectedProject?.id === project.id ? 'active' : ''}`;
+    div.textContent = project.name;
+    div.onclick = () => selectProject(project);
+    document.getElementById('projectsList').appendChild(div);
   }
 
-  // Add project
-  async function addProject(event) {
-    event.preventDefault();
+  // Select project
+  function selectProject(project) {
+    state.selectedProject = project;
+    state.selectedPhase = null;
+    loadPhases();
+    document.getElementById('phasesSection').style.display = 'block';
+    document.getElementById('tasksSection').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'none';
+  }
 
-    const name = document.getElementById('projectName').value;
-    const desc = document.getElementById('projectDesc').value;
-    const priority = document.getElementById('projectPriority').value;
-    const status = document.getElementById('projectStatus').value;
-    const start = document.getElementById('projectStart').value;
-    const deadline = document.getElementById('projectDeadline').value;
-    const team = document.getElementById('projectTeam').value.split(',').map(t => t.trim()).filter(t => t);
-    const progress = parseInt(document.getElementById('projectProgress').value) || 0;
-
-    const messageEl = document.getElementById('addMessage');
+  // Load phases
+  async function loadPhases() {
+    if (!state.selectedProject) return;
 
     try {
-      messageEl.innerHTML = '⏳ Adding...';
+      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/phases?key=${API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
 
-      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/projects?key=${API_KEY}`;
+      state.phases = [];
+      document.getElementById('phasesList').innerHTML = '';
+
+      if (data.documents) {
+        data.documents.forEach(doc => {
+          const fields = doc.fields;
+          if (fields.projectId?.stringValue === state.selectedProject.id) {
+            const phase = {
+              id: doc.name.split('/').pop(),
+              name: fields.name?.stringValue || '',
+              startDate: fields.startDate?.stringValue || '',
+              endDate: fields.endDate?.stringValue || ''
+            };
+            state.phases.push(phase);
+            renderPhaseItem(phase);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error loading phases:', error);
+    }
+  }
+
+  // Render phase in sidebar
+  function renderPhaseItem(phase) {
+    const div = document.createElement('div');
+    div.className = `sidebar-item ${state.selectedPhase?.id === phase.id ? 'active' : ''}`;
+    div.textContent = phase.name;
+    div.onclick = () => selectPhase(phase);
+    document.getElementById('phasesList').appendChild(div);
+  }
+
+  // Select phase
+  function selectPhase(phase) {
+    state.selectedPhase = phase;
+    loadTasks();
+    document.getElementById('tasksSection').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+  }
+
+  // Load tasks
+  async function loadTasks() {
+    if (!state.selectedPhase) return;
+
+    try {
+      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/tasks?key=${API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      state.tasks = [];
+      document.getElementById('tasksList').innerHTML = '';
+
+      if (data.documents) {
+        data.documents.forEach(doc => {
+          const fields = doc.fields;
+          if (fields.phaseId?.stringValue === state.selectedPhase.id) {
+            const task = {
+              id: doc.name.split('/').pop(),
+              name: fields.name?.stringValue || '',
+              dueDate: fields.dueDate?.stringValue || '',
+              isCompleted: fields.isCompleted?.booleanValue || false
+            };
+            state.tasks.push(task);
+            renderTaskItem(task);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+    }
+  }
+
+  // Render task in sidebar
+  function renderTaskItem(task) {
+    const div = document.createElement('div');
+    div.className = `sidebar-item ${task.isCompleted ? 'completed' : ''}`;
+    div.textContent = task.name;
+    div.onclick = () => selectTask(task);
+    document.getElementById('tasksList').appendChild(div);
+  }
+
+  // Form functions
+  function showNewOrgForm() {
+    document.getElementById('orgForm').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('detailsView').style.display = 'none';
+  }
+
+  function showNewProjectForm() {
+    if (!state.selectedOrg) { alert('Select org first'); return; }
+    document.getElementById('projectForm').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+  }
+
+  function showNewPhaseForm() {
+    if (!state.selectedProject) { alert('Select project first'); return; }
+    document.getElementById('phaseForm').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+  }
+
+  function showNewTaskForm() {
+    if (!state.selectedPhase) { alert('Select phase first'); return; }
+    document.getElementById('taskForm').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+  }
+
+  function closeForm() {
+    document.getElementById('orgForm').style.display = 'none';
+    document.getElementById('projectForm').style.display = 'none';
+    document.getElementById('phaseForm').style.display = 'none';
+    document.getElementById('taskForm').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+  }
+
+  // Create functions
+  async function createOrganization() {
+    const name = document.getElementById('orgName').value;
+    const desc = document.getElementById('orgDesc').value;
+
+    if (!name) { alert('Name required'); return; }
+
+    try {
+      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/organizations?key=${API_KEY}`;
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -285,84 +472,132 @@
           fields: {
             name: { stringValue: name },
             description: { stringValue: desc },
-            priority: { stringValue: priority },
-            status: { stringValue: status },
-            startDate: { stringValue: start },
-            deadline: { stringValue: deadline },
-            team: { arrayValue: { values: team.map(t => ({ stringValue: t })) } },
-            progress: { integerValue: progress },
-            createdAt: { timestampValue: new Date().toISOString() },
-            updatedAt: { timestampValue: new Date().toISOString() }
+            createdAt: { timestampValue: new Date().toISOString() }
           }
         })
       });
 
       if (response.ok) {
-        messageEl.innerHTML = '<div class="success">✅ Project added successfully!</div>';
-        document.getElementById('addProjectForm').reset();
-        loadProjects();
-      } else {
-        messageEl.innerHTML = '<div class="error">❌ Error adding project</div>';
+        document.getElementById('orgName').value = '';
+        document.getElementById('orgDesc').value = '';
+        closeForm();
+        loadOrganizations();
       }
     } catch (error) {
-      messageEl.innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
+      alert('Error: ' + error.message);
     }
   }
 
-  // Update status
-  async function updateStatus(projectId, newStatus) {
-    try {
-      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/projects/${projectId}?key=${API_KEY}`;
-      const project = projects.find(p => p.id === projectId);
+  async function createProject() {
+    const name = document.getElementById('projectName').value;
+    const desc = document.getElementById('projectDesc').value;
+    const start = document.getElementById('projectStart').value;
+    const end = document.getElementById('projectEnd').value;
 
-      await fetch(url, {
-        method: 'PATCH',
+    if (!name || !start || !end) { alert('Required fields missing'); return; }
+
+    try {
+      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/projects?key=${API_KEY}`;
+      const response = await fetch(url, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fields: {
-            name: { stringValue: project.name },
-            description: { stringValue: project.description },
-            priority: { stringValue: project.priority },
-            status: { stringValue: newStatus },
-            startDate: { stringValue: project.startDate },
-            deadline: { stringValue: project.deadline },
-            team: { arrayValue: { values: project.team.map(t => ({ stringValue: t })) } },
-            progress: { integerValue: project.progress },
-            createdAt: { timestampValue: new Date().toISOString() },
-            updatedAt: { timestampValue: new Date().toISOString() }
+            organizationId: { stringValue: state.selectedOrg.id },
+            name: { stringValue: name },
+            description: { stringValue: desc },
+            startDate: { stringValue: start },
+            endDate: { stringValue: end },
+            createdAt: { timestampValue: new Date().toISOString() }
           }
         })
       });
 
-      loadProjects();
+      if (response.ok) {
+        document.getElementById('projectName').value = '';
+        document.getElementById('projectDesc').value = '';
+        closeForm();
+        loadProjects();
+      }
     } catch (error) {
       alert('Error: ' + error.message);
     }
   }
 
-  // Delete project
-  async function deleteProject(projectId) {
-    if (!confirm('Delete this project?')) return;
+  async function createPhase() {
+    const name = document.getElementById('phaseName').value;
+    const desc = document.getElementById('phaseDesc').value;
+    const start = document.getElementById('phaseStart').value;
+    const end = document.getElementById('phaseEnd').value;
+
+    if (!name || !start || !end) { alert('Required fields missing'); return; }
 
     try {
-      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/projects/${projectId}?key=${API_KEY}`;
-      await fetch(url, { method: 'DELETE' });
-      loadProjects();
+      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/phases?key=${API_KEY}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fields: {
+            projectId: { stringValue: state.selectedProject.id },
+            name: { stringValue: name },
+            description: { stringValue: desc },
+            startDate: { stringValue: start },
+            endDate: { stringValue: end },
+            createdAt: { timestampValue: new Date().toISOString() }
+          }
+        })
+      });
+
+      if (response.ok) {
+        document.getElementById('phaseName').value = '';
+        document.getElementById('phaseDesc').value = '';
+        closeForm();
+        loadPhases();
+      }
     } catch (error) {
       alert('Error: ' + error.message);
     }
   }
 
-  // Update stats
-  function updateStats() {
-    document.getElementById('totalCount').textContent = projects.length;
-    document.getElementById('projectCount').textContent = projects.length;
-    document.getElementById('inProgressCount').textContent = projects.filter(p => p.status === 'In Progress').length;
-    document.getElementById('completedCount').textContent = projects.filter(p => p.status === 'Completed').length;
+  async function createTask() {
+    const name = document.getElementById('taskName').value;
+    const desc = document.getElementById('taskDesc').value;
+    const dueDate = document.getElementById('taskDueDate').value;
+
+    if (!name) { alert('Name required'); return; }
+
+    try {
+      const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/tasks?key=${API_KEY}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fields: {
+            phaseId: { stringValue: state.selectedPhase.id },
+            name: { stringValue: name },
+            description: { stringValue: desc },
+            dueDate: { stringValue: dueDate },
+            isCompleted: { booleanValue: false },
+            createdAt: { timestampValue: new Date().toISOString() }
+          }
+        })
+      });
+
+      if (response.ok) {
+        document.getElementById('taskName').value = '';
+        document.getElementById('taskDesc').value = '';
+        document.getElementById('taskDueDate').value = '';
+        closeForm();
+        loadTasks();
+      }
+    } catch (error) {
+      alert('Error: ' + error.message);
+    }
   }
 
   // Initialize
-  loadProjects();
+  loadOrganizations();
 </script>
 
 </body>
