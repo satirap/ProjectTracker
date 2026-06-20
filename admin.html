@@ -460,11 +460,16 @@
   async function createOrganization() {
     const name = document.getElementById('orgName').value;
     const desc = document.getElementById('orgDesc').value;
+    const msgEl = document.getElementById('orgMessage');
 
-    if (!name) { alert('Name required'); return; }
+    if (!name) { msgEl.innerHTML = '<div class="message error">Name required</div>'; return; }
 
     try {
+      msgEl.innerHTML = '<div class="message">⏳ Creating...</div>';
+
       const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/organizations?key=${API_KEY}`;
+      console.log('POST:', url);
+
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -477,14 +482,23 @@
         })
       });
 
+      const responseText = await response.text();
+      console.log('Status:', response.status, 'Response:', responseText);
+
       if (response.ok) {
+        msgEl.innerHTML = '<div class="message success">✅ Created!</div>';
         document.getElementById('orgName').value = '';
         document.getElementById('orgDesc').value = '';
-        closeForm();
-        loadOrganizations();
+        setTimeout(() => {
+          closeForm();
+          loadOrganizations();
+        }, 1000);
+      } else {
+        msgEl.innerHTML = `<div class="message error">❌ Error ${response.status}: ${responseText}</div>`;
       }
     } catch (error) {
-      alert('Error: ' + error.message);
+      console.error('Error:', error);
+      document.getElementById('orgMessage').innerHTML = `<div class="message error">❌ ${error.message}</div>`;
     }
   }
 
