@@ -141,19 +141,25 @@
         <div class="form-row">
           <div class="form-group">
             <label>Start Date *</label>
-            <input type="date" id="projectStart" required onchange="calculateEndDate()">
+            <input type="date" id="projectStart" required onchange="calcProjectDuration()">
           </div>
           <div class="form-group">
-            <label>Duration (Days) *</label>
-            <input type="number" id="projectDuration" min="1" placeholder="e.g., 30" onchange="calculateEndDate()">
+            <label>Duration (Days)</label>
+            <input type="number" id="projectDuration" min="1" placeholder="auto" onchange="calcProjectEnd()">
           </div>
         </div>
-        <div class="form-group">
-          <label>End Date (Auto-calculated)</label>
-          <input type="date" id="projectEnd" readonly style="background: #f9f9f9;">
+        <div class="form-row">
+          <div class="form-group">
+            <label>End Date</label>
+            <input type="date" id="projectEnd" onchange="calcProjectDuration()">
+          </div>
+          <div class="form-group">
+            <label>Days</label>
+            <input type="number" id="projectDays" readonly style="background: #f9f9f9;" placeholder="auto-calculated">
+          </div>
         </div>
         <div style="font-size: 12px; color: #666; background: #f0f7ff; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-          💡 Set Start Date + Duration, End Date will be auto-calculated
+          💡 Set Start + Duration OR Start + End → system calculates the missing value
         </div>
         <button class="btn" onclick="createProject()">Create</button>
         <button class="btn btn-secondary" onclick="closeForm()">Cancel</button>
@@ -168,17 +174,30 @@
         </div>
         <div class="form-group">
           <label>Description</label>
-          <textarea id="phaseDesc" placeholder="Description"></textarea>
+          <textarea id="phaseDesc" placeholder="Phase description"></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>Start Date *</label>
-            <input type="date" id="phaseStart" required>
+            <input type="date" id="phaseStart" required onchange="calcPhaseDuration()">
           </div>
           <div class="form-group">
-            <label>End Date *</label>
-            <input type="date" id="phaseEnd" required>
+            <label>Duration (Days)</label>
+            <input type="number" id="phaseDuration" min="1" placeholder="auto" onchange="calcPhaseEnd()">
           </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>End Date</label>
+            <input type="date" id="phaseEnd" onchange="calcPhaseDuration()">
+          </div>
+          <div class="form-group">
+            <label>Days</label>
+            <input type="number" id="phaseDays" readonly style="background: #f9f9f9;" placeholder="auto-calculated">
+          </div>
+        </div>
+        <div style="font-size: 12px; color: #666; background: #f0f7ff; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+          💡 Set Start + Duration OR Start + End → system calculates the missing value
         </div>
         <button class="btn" onclick="createPhase()">Create</button>
         <button class="btn btn-secondary" onclick="closeForm()">Cancel</button>
@@ -509,29 +528,45 @@
     }
   }
 
-  function calculateEndDate() {
-    const startInput = document.getElementById('projectStart').value;
-    const durationInput = document.getElementById('projectDuration').value;
+  // Project: Calculate End Date from Start + Duration
+  function calcProjectEnd() {
+    const start = document.getElementById('projectStart').value;
+    const duration = document.getElementById('projectDuration').value;
 
-    if (!startInput || !durationInput) return;
+    if (!start || !duration) return;
 
-    const startDate = new Date(startInput);
-    const duration = parseInt(durationInput);
+    const startDate = new Date(start);
     const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + duration);
+    endDate.setDate(endDate.getDate() + parseInt(duration));
 
-    const endDateStr = endDate.toISOString().split('T')[0];
-    document.getElementById('projectEnd').value = endDateStr;
+    document.getElementById('projectEnd').value = endDate.toISOString().split('T')[0];
+    calcProjectDuration();
+  }
+
+  // Project: Calculate Duration from Start + End
+  function calcProjectDuration() {
+    const start = document.getElementById('projectStart').value;
+    const end = document.getElementById('projectEnd').value;
+
+    if (!start || !end) return;
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffTime = Math.abs(endDate - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    document.getElementById('projectDays').value = diffDays;
+    document.getElementById('projectDuration').value = diffDays;
   }
 
   async function createProject() {
     const name = document.getElementById('projectName').value;
-    const desc = document.getElementById('projectDesc').value;
     const start = document.getElementById('projectStart').value;
     const end = document.getElementById('projectEnd').value;
-    const duration = document.getElementById('projectDuration').value;
 
-    if (!name || !start || !duration) { alert('Required fields missing'); return; }
+    if (!name || !start || !end) { alert('Required fields missing'); return; }
+
+    const desc = document.getElementById('projectDesc').value;
 
     try {
       const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/projects?key=${API_KEY}`;
@@ -561,13 +596,45 @@
     }
   }
 
+  // Phase: Calculate End Date from Start + Duration
+  function calcPhaseEnd() {
+    const start = document.getElementById('phaseStart').value;
+    const duration = document.getElementById('phaseDuration').value;
+
+    if (!start || !duration) return;
+
+    const startDate = new Date(start);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + parseInt(duration));
+
+    document.getElementById('phaseEnd').value = endDate.toISOString().split('T')[0];
+    calcPhaseDuration();
+  }
+
+  // Phase: Calculate Duration from Start + End
+  function calcPhaseDuration() {
+    const start = document.getElementById('phaseStart').value;
+    const end = document.getElementById('phaseEnd').value;
+
+    if (!start || !end) return;
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffTime = Math.abs(endDate - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    document.getElementById('phaseDays').value = diffDays;
+    document.getElementById('phaseDuration').value = diffDays;
+  }
+
   async function createPhase() {
     const name = document.getElementById('phaseName').value;
-    const desc = document.getElementById('phaseDesc').value;
     const start = document.getElementById('phaseStart').value;
     const end = document.getElementById('phaseEnd').value;
 
     if (!name || !start || !end) { alert('Required fields missing'); return; }
+
+    const desc = document.getElementById('phaseDesc').value;
 
     try {
       const url = `${FIRESTORE_API}/projects/${PROJECT_ID}/databases/(default)/documents/phases?key=${API_KEY}`;
